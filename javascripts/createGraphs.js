@@ -20,9 +20,35 @@ var data = {
 	],
 
 	"AlignedGenomes" : [
+
 		{
 			"Name" : "AlignedGenome1",
-			"Size" : 123456,
+			"Size" : 200000,
+			"Contigs": [
+				{
+					"Name" : "ContigName1",
+					"BeginAtReferenceGenome" : 0,
+					"EndAtReferenceGenome" : 200000,
+					"Locus" : [
+								{
+									"Name" : "LocusName1",
+									"AlleleNumber" : 3,
+									"BeginAtContig" : 3000,
+									"EndAtContig" : 7000
+								},
+								{
+									"Name" : "LocusName2",
+									"AlleleNumber" : 2,
+									"BeginAtContig" : 0,
+									"EndAtContig" : 2000
+								}
+							  ]
+				}
+			]
+		},
+		{
+			"Name" : "AlignedGenome2",
+			"Size" : 170000,
 			"Contigs": [
 				{
 					"Name" : "ContigName1",
@@ -32,14 +58,40 @@ var data = {
 								{
 									"Name" : "LocusName1",
 									"AlleleNumber" : 3,
-									"BeginAtContig" : 15,
-									"EndAtContig" : 1900
+									"BeginAtContig" : 3000,
+									"EndAtContig" : 7000
 								},
 								{
 									"Name" : "LocusName2",
 									"AlleleNumber" : 2,
-									"BeginAtContig" : 2000,
-									"EndAtContig" : 3870
+									"BeginAtContig" : 0,
+									"EndAtContig" : 2000
+								}
+							  ]
+				},
+				{
+					"Name" : "ContigName2",
+					"BeginAtReferenceGenome" : 70000,
+					"EndAtReferenceGenome" : 123456,
+					"Locus" : [
+								{
+									"Name" : "LocusName1",
+									"AlleleNumber" : 3,
+									"BeginAtContig" : 0,
+									"EndAtContig" : 2000
+								}
+							  ]
+				},
+				{
+					"Name" : "ContigName2",
+					"BeginAtReferenceGenome" : 130000,
+					"EndAtReferenceGenome" : 150000,
+					"Locus" : [
+								{
+									"Name" : "LocusName1",
+									"AlleleNumber" : 3,
+									"BeginAtContig" : 10000,
+									"EndAtContig" : 20000
 								}
 							  ]
 				}
@@ -47,7 +99,7 @@ var data = {
 		},
 
 		{
-			"Name" : "AlignedGenome2",
+			"Name" : "AlignedGenome3",
 			"Size" : 154678,
 			"Contigs": [
 				{
@@ -64,8 +116,8 @@ var data = {
 								{
 									"Name" : "LocusName2",
 									"AlleleNumber" : 7,
-									"BeginAtContig" : 2200,
-									"EndAtContig" : 4300
+									"BeginAtContig" : 70000,
+									"EndAtContig" : 80000
 								}
 							  ]
 				}
@@ -106,6 +158,8 @@ function setLines(){
 		countContigs = 0;
 		currentX = 0;
 		currentY = 0;
+		countGenomesY1 += 2;
+		countGenomesY2 += 2;
 
 		genomeGroups = svg.append('g')
 						.attr('id', function(){
@@ -129,33 +183,39 @@ function setLines(){
 								return sizeScale(d.EndAtReferenceGenome);
 							})
 							.attr('y1', function(d){
-								countGenomesY1 += 2;
 								currentY = (height + genomeInterval) * countGenomesY1;
 								return (height + genomeInterval) * countGenomesY1;
 							})
 							.attr('y2', function(d){
-								countGenomesY2 += 2;
 								return (height + genomeInterval) * countGenomesY2;
 							})
 							.attr("stroke-width", 2)
 					        .attr("stroke", "black");
 
+		
 		currentContigs = svg.select('#group_' + String(countLines));
 		console.log(currentContigs);
 
 		for(j in data.AlignedGenomes[i].Contigs){
+			
+			contig = data.AlignedGenomes[i].Contigs[j];
+			contigSize = contig.EndAtReferenceGenome - contig.BeginAtReferenceGenome;
 			toSearch = '#Contig_' + String(parseInt(i)+1) + '_' + String(parseInt(j)+1);
 			console.log(toSearch);
 			currentX = sizeScale(data.AlignedGenomes[i].Contigs[j].BeginAtReferenceGenome);
+			LocusPositionScale = d3.scale.linear().domain([0, contigSize]).range([currentX, sizeScale(contig.EndAtReferenceGenome)]);
 			LocusGroup = currentContigs.selectAll(toSearch).append('g');
 
 			LocusGroup.selectAll(toSearch)
 				.data(data.AlignedGenomes[i].Contigs[j].Locus)
 				.enter()
 				.append('rect')
-				.attr('x', function(d){ return sizeScale(currentX + d.BeginAtContig); })
+				.attr('x', function(d){ return LocusPositionScale(d.BeginAtContig); })
 				.attr('y', currentY-Locusheight/2)
-				.attr('width', function(d){ return sizeScale(d.EndAtContig-d.BeginAtContig); })
+				.attr('width', function(d){ 
+					console.log(d.EndAtContig-d.BeginAtContig);
+					console.log(LocusPositionScale(d.EndAtContig-d.BeginAtContig));
+					return sizeScale(d.EndAtContig-d.BeginAtContig); })
 				.attr('height', Locusheight);
 		}
 
