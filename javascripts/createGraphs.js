@@ -1,142 +1,26 @@
-var data = {
-	"ReferenceGenome" : [
-		{
-			"Name"  : "RefName",
-			"Begin" : 0,
-			"End"	: 1234567,
-			"Locus" : [
-				{
-					"Name" : "LocusName1",
-					"BeginAtReference" : 20,
-					"EndAtReference" : 1890
-				},
-				{
-					"Name" : "LocusName2",
-					"BeginAtReference" : 2560,
-					"EndAtReference" : 3300
-				}
-			]
-		}
-	],
+var yScale, svgDefaultWidth = $('#graphicArea').width(), svgHeight = $('#graphicArea').height(), start = 0, Locusheight = 30;
 
-	"AlignedGenomes" : [
+var svgWidth = svgDefaultWidth;
 
-		{
-			"Name" : "AlignedGenome1",
-			"Size" : 200000,
-			"Contigs": [
-				{
-					"Name" : "ContigName1",
-					"BeginAtReferenceGenome" : 0,
-					"EndAtReferenceGenome" : 200000,
-					"Locus" : [
-								{
-									"Name" : "LocusName1",
-									"AlleleNumber" : 3,
-									"BeginAtContig" : 3000,
-									"EndAtContig" : 7000
-								},
-								{
-									"Name" : "LocusName2",
-									"AlleleNumber" : 2,
-									"BeginAtContig" : 0,
-									"EndAtContig" : 2000
-								}
-							  ]
-				}
-			]
-		},
-		{
-			"Name" : "AlignedGenome2",
-			"Size" : 170000,
-			"Contigs": [
-				{
-					"Name" : "ContigName1",
-					"BeginAtReferenceGenome" : 500,
-					"EndAtReferenceGenome" : 45671,
-					"Locus" : [
-								{
-									"Name" : "LocusName1",
-									"AlleleNumber" : 3,
-									"BeginAtContig" : 3000,
-									"EndAtContig" : 7000
-								},
-								{
-									"Name" : "LocusName2",
-									"AlleleNumber" : 2,
-									"BeginAtContig" : 0,
-									"EndAtContig" : 2000
-								}
-							  ]
-				},
-				{
-					"Name" : "ContigName2",
-					"BeginAtReferenceGenome" : 70000,
-					"EndAtReferenceGenome" : 123456,
-					"Locus" : [
-								{
-									"Name" : "LocusName1",
-									"AlleleNumber" : 3,
-									"BeginAtContig" : 0,
-									"EndAtContig" : 2000
-								}
-							  ]
-				},
-				{
-					"Name" : "ContigName2",
-					"BeginAtReferenceGenome" : 130000,
-					"EndAtReferenceGenome" : 150000,
-					"Locus" : [
-								{
-									"Name" : "LocusName1",
-									"AlleleNumber" : 3,
-									"BeginAtContig" : 10000,
-									"EndAtContig" : 20000
-								}
-							  ]
-				}
-			]
-		},
+var data;
 
-		{
-			"Name" : "AlignedGenome3",
-			"Size" : 154678,
-			"Contigs": [
-				{
-					"Name" : "ContigName1",
-					"BeginAtReferenceGenome" : 5000,
-					"EndAtReferenceGenome" : 123456,
-					"Locus" : [
-								{
-									"Name" : "LocusName1",
-									"AlleleNumber" : 4,
-									"BeginAtContig" : 100,
-									"EndAtContig" : 2000
-								},
-								{
-									"Name" : "LocusName2",
-									"AlleleNumber" : 7,
-									"BeginAtContig" : 70000,
-									"EndAtContig" : 80000
-								}
-							  ]
-				}
 
-			]
-		}
-	]
-}
-
-var yScale, svgWidth = 1000, svgHeight = 1000, start = 0, Locusheight = 30;
+var zoom = d3.behavior.zoom()
+    .on("zoom", zoomed);
 
 function main(){
-	setScale(setLines);
+	d3.json("https://googledrive.com/host/0Bw6VuoagsdhmZkVjLVFnaUk4cU0", function(error, json) {
+  		if (error) return console.warn(error);
+  		data = json;
+  		console.log(data);
+  		setScale(setLines);
+	});
 }
 
 function setScale(callback){
 	maxSize = 0;
-	for (i in data.AlignedGenomes){
-		if (data.AlignedGenomes[i].Size > maxSize) maxSize = data.AlignedGenomes[i].Size;
+	for (i in data.Genomes){
+		if (data.Genomes[i].Size > maxSize) maxSize = data.Genomes[i].Size;
 	}
 	sizeScale = d3.scale.linear().domain([0, maxSize]).range([start, svgWidth]);
 	callback();
@@ -145,21 +29,26 @@ function setScale(callback){
 
 
 function setLines(){
-	console.log(data);
-	svg = d3.select('body').append('svg').attr('width', svgWidth).attr('height', svgHeight)
+	svg = d3.select('#graphicArea').append('svg').attr('width', svgWidth).attr('height', svgHeight).call(zoom).append('g');
 	countGenomesY1 = -1;
 	countGenomesY2 = -1;
 	height = 20;
+	ContigInterval = 300;
 	genomeInterval = 20;
 	countLines = 0;
 	lineID = '';
 
-	for (i in data.AlignedGenomes){
-		countContigs = 0;
+	for (i in data.Genomes){
+		countContigs1 = 0;
+		countContigs2 = 0;
+		countContigs3 = 0;
 		currentX = 0;
 		currentY = 0;
 		countGenomesY1 += 2;
 		countGenomesY2 += 2;
+		prevX1 = 0;
+		prevX2 = 0;
+		prevSize = 0;
 
 		genomeGroups = svg.append('g')
 						.attr('id', function(){
@@ -168,19 +57,33 @@ function setLines(){
 						});
 
 		currentLines = genomeGroups.selectAll('line')
-							.data(data.AlignedGenomes[i].Contigs)
+							.data(data.Genomes[i].Contigs)
 							.enter()
 							.append('g')
 							.attr('id', function(){
-										countContigs += 1;
-										return 'Contig_'+String(countLines)+'_'+String(countContigs);
+										countContigs1 += 1;
+										return 'Contig_'+String(countLines)+'_'+String(countContigs1);
 							})
 							.append('line')
 							.attr('x1', function(d){
-								return sizeScale(d.BeginAtReferenceGenome);
+								if (countContigs2 != 0) Toreturn = sizeScale(parseInt(ContigInterval) + parseInt(prevSize));
+								else{
+									Toreturn = sizeScale(parseInt(ContigInterval));
+									prevSize = 0;
+								} 
+								countContigs2 += 1;
+								prevSize += parseInt(d.Size);
+								return Toreturn;
 							})
 							.attr('x2', function(d){
-								return sizeScale(d.EndAtReferenceGenome);
+								if (countContigs3 != 0) Toreturn = sizeScale(parseInt(prevSize) + parseInt(d.Size));
+								else{
+									Toreturn = sizeScale(parseInt(d.Size));
+									prevSize = 0;
+								} 
+								countContigs3 += 1;
+								prevSize += parseInt(d.Size);
+								return Toreturn;
 							})
 							.attr('y1', function(d){
 								currentY = (height + genomeInterval) * countGenomesY1;
@@ -194,32 +97,76 @@ function setLines(){
 
 		
 		currentContigs = svg.select('#group_' + String(countLines));
-		console.log(currentContigs);
 
-		for(j in data.AlignedGenomes[i].Contigs){
+		prevLocation = ContigInterval;
+
+		for(j in data.Genomes[i].Contigs){
 			
-			contig = data.AlignedGenomes[i].Contigs[j];
-			contigSize = contig.EndAtReferenceGenome - contig.BeginAtReferenceGenome;
+
+			contig = data.Genomes[i].Contigs[j];
+			contigSize = parseInt(contig.Size);
 			toSearch = '#Contig_' + String(parseInt(i)+1) + '_' + String(parseInt(j)+1);
 			console.log(toSearch);
-			currentX = sizeScale(data.AlignedGenomes[i].Contigs[j].BeginAtReferenceGenome);
-			LocusPositionScale = d3.scale.linear().domain([0, contigSize]).range([currentX, sizeScale(contig.EndAtReferenceGenome)]);
+			currentX = sizeScale(prevLocation);
+			LocusPositionScale = d3.scale.linear().domain([0, contigSize]).range([currentX, sizeScale(prevLocation + contigSize)]);
 			LocusGroup = currentContigs.selectAll(toSearch).append('g');
 
 			LocusGroup.selectAll(toSearch)
-				.data(data.AlignedGenomes[i].Contigs[j].Locus)
+				.data(data.Genomes[i].Contigs[j].Locus)
 				.enter()
 				.append('rect')
-				.attr('x', function(d){ return LocusPositionScale(d.BeginAtContig); })
+				.attr('class', function(d){ return d.Name.replace(/\./g,'_').replace(/\:/g,'__');})
+				.attr('x', function(d){ 
+					if (parseInt(d.EndtAt) < parseInt(d.StartAt)) return LocusPositionScale(parseInt(d.EndtAt));
+					else return LocusPositionScale(parseInt(d.StartAt)); })
 				.attr('y', currentY-Locusheight/2)
 				.attr('width', function(d){ 
-					console.log(d.EndAtContig-d.BeginAtContig);
-					console.log(LocusPositionScale(d.EndAtContig-d.BeginAtContig));
-					return sizeScale(d.EndAtContig-d.BeginAtContig); })
-				.attr('height', Locusheight);
+					if (parseInt(d.EndtAt) < parseInt(d.StartAt)) return sizeScale(parseInt(d.StartAt) - parseInt(d.EndtAt));
+					
+					else return sizeScale(parseInt(d.EndtAt)-parseInt(d.StartAt));
+ 				})
+				.attr('height', Locusheight)
+				.on('mouseover', function(d){
+					highlightSameName(d);
+				})
+				.on("mouseout", function(d) {
+            		defaultColor(d);
+        		})
+				.on('click', function(d){
+					showInfo(d);
+				});
+
+			prevLocation += contigSize;
 		}
+
+		
 
 
 	}
 
+}
+
+function zoomed() {
+ svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+}
+
+function showInfo(locus){
+	toShow = '<br> Name: ' + locus.Name + '<br> Start at Contig: ' + locus.StartAt + '<br> End at Contig: ' + locus.EndtAt;
+	$('#infoPlace').append('<p>----------------------' + toShow + '</p>');
+}
+
+function highlightSameName(locus){
+	toSearch = '.' + locus.Name.replace(/\./g,'_').replace(/\:/g,'__');
+	d3.selectAll(toSearch).attr('fill', 'blue');
+}
+
+function defaultColor(locus){
+	toSearch = '.' + locus.Name.replace(/\./g,'_').replace(/\:/g,'__');
+	d3.selectAll(toSearch).attr('fill', 'black');
+}
+
+function ChangeScale(value){
+	svgWidth = svgDefaultWidth * parseInt(value);
+	d3.selectAll('svg').remove();
+	setScale(setLines);
 }
