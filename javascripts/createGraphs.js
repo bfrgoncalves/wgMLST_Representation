@@ -9,12 +9,19 @@ var zoom = d3.behavior.zoom()
     .on("zoom", zoomed);
 
 function main(){
-	d3.json("https://googledrive.com/host/0Bw6VuoagsdhmZkVjLVFnaUk4cU0", function(error, json) {
+	d3.json("https://googledrive.com/host/0Bw6VuoagsdhmSS1PWUg3OWhfeEE", function(error, json) {
   		if (error) return console.warn(error);
   		data = json;
   		console.log(data);
   		setScale(setLines);
+  		search_Locus(data);
 	});
+
+	$('#searchForm').submit(function(e) {
+                          e.preventDefault();
+                          var LocusId = $('#Locusid').val();
+                          highlightLocus(LocusId);
+                      });
 }
 
 function setScale(callback){
@@ -93,7 +100,7 @@ function setLines(){
 								return (height + genomeInterval) * countGenomesY2;
 							})
 							.attr("stroke-width", 2)
-					        .attr("stroke", "black");
+					        .attr("stroke", "red");
 
 		
 		currentContigs = svg.select('#group_' + String(countLines));
@@ -104,12 +111,12 @@ function setLines(){
 			
 
 			contig = data.Genomes[i].Contigs[j];
+			isReverse = contig.Reverse;
 			contigSize = parseInt(contig.Size);
 			toSearch = '#Contig_' + String(parseInt(i)+1) + '_' + String(parseInt(j)+1);
-			console.log(toSearch);
 			currentX = sizeScale(prevLocation);
 			LocusPositionScale = d3.scale.linear().domain([0, contigSize]).range([currentX, sizeScale(prevLocation + contigSize)]);
-			LocusGroup = currentContigs.selectAll(toSearch).append('g');
+			LocusGroup = currentContigs.selectAll(toSearch).append('g').attr('class','LocusGroup');
 
 			LocusGroup.selectAll(toSearch)
 				.data(data.Genomes[i].Contigs[j].Locus)
@@ -117,7 +124,13 @@ function setLines(){
 				.append('rect')
 				.attr('class', function(d){ return d.Name.replace(/\./g,'_').replace(/\:/g,'__');})
 				.attr('x', function(d){ 
-					if (parseInt(d.EndtAt) < parseInt(d.StartAt)) return LocusPositionScale(parseInt(d.EndtAt));
+
+					if (parseInt(d.EndtAt) < parseInt(d.StartAt)){
+						if (isReverse == true) {
+							return LocusPositionScale(contigSize - parseInt(d.StartAt));
+						}
+						else return LocusPositionScale(parseInt(d.EndtAt));
+					}
 					else return LocusPositionScale(parseInt(d.StartAt)); })
 				.attr('y', currentY-Locusheight/2)
 				.attr('width', function(d){ 
@@ -167,6 +180,8 @@ function defaultColor(locus){
 
 function ChangeScale(value){
 	svgWidth = svgDefaultWidth * parseInt(value);
+	$('#currentScale').text(String(value) + 'x');
 	d3.selectAll('svg').remove();
 	setScale(setLines);
 }
+

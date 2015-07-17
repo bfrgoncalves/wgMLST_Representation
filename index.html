@@ -2,16 +2,65 @@
 	<head>
 
 	<link rel='stylesheet' href='stylesheets/style.css' ></link>
+	<link rel='stylesheet' href='stylesheets/bootstrap.css' ></link>
+	<link rel='stylesheet' href='stylesheets/jquery-ui.css' ></link>
+	<style>
+		.ui-autocomplete {
+		    max-height: 30%;
+		    overflow-y: auto;
+		    /* prevent horizontal scrollbar */
+		    overflow-x: hidden;
+		    /* add padding to account for vertical scrollbar */
+		    padding-right: 20px;
+		}
+	</style>
 	</head>
 	<body onload="main()">
 		<div id = 'graphicArea'></div>
-		<div id = 'infoPlace'></div>
-		<div id='LabelSizeAttributes'>Scale Size</div>	
+		<div id='LabelSizeAttributes'>Scale Size</div>
+		<div id='currentScale'>1x</div>		
 		<div id='SizeAttributes'>
 			<input type='range' id='ScaleSlider' name='points1' value = '1' min='1' max='100' onchange='ChangeScale(this.value)'/>
 		</div>
+
+		<div>
+			<ul class="nav nav-tabs" id="tabs">
+				<li class="active" id="treeTab">
+					<a data-toggle="tab" data-target="#infoContent" data-toggle="mainTab">Info</a>
+				</li>
+				<li id="treeTab">
+					<a data-toggle="tab" data-target="#searchPlace" data-toggle="mainTab">Search</a>
+				</li>
+			</ul>
+			
+			<div class="tab-content">
+				<div class="tab-pane active" id="infoContent">
+					<div id ='infoPlace'></div>
+				</div>
+				<div class="tab-pane" id="searchPlace">
+					<div id ='search'>
+						<form id='searchForm'>
+								<div class = "input-group" id="searchButton">
+									<input class="form-control" type='text' id='Locusid' style='color:black' placehorder="Search">
+									<span class="input-group-btn">
+										<button class="btn btn-default" type='submit'> Search</button>
+									</span>
+								</div>
+						</form>
+					</div>
+					<div id='removeSearchButton'>
+						<button class="btn btn-default" onclick="removeSearches()">Remove All</button>
+					</div>
+					<div id='AllSearches'></div>
+				</div>
+
+			</div>
+		</div>
 	</body>
 	<script type="text/javascript" src="dependencies/jquery-2.1.3.min.js"></script>
+	<script type="text/javascript" src="dependencies/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="dependencies/bootstrap.js"></script>
 	<script type="text/javascript" src="dependencies/d3.min.js"></script>
 	<script type="text/javascript" src="javascripts/createGraphs.js"></script>
+	<script type="text/javascript" src="javascripts/searchLocus.js"></script>
 </html>

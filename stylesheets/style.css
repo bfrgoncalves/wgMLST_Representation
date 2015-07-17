@@ -8,7 +8,7 @@
 }
 #infoPlace {
 	width:50%;
-  	height:50%;
+  	height:45%;
   	overflow-y: auto;
  	overflow-x: auto;
 }
@@ -29,4 +29,44 @@
   	position: absolute;
   	overflow-y: auto;
  	overflow-x: auto;
+}
+
+#currentScale {
+	width:10%;
+	left: 76%;
+	top:45%;
+  	position: absolute;
+  	overflow-y: auto;
+ 	overflow-x: auto;
+}
+
+#GIFimage {
+	width:50%;
+	left: 50%;
+	top:70%;
+  	position: absolute;
+  	overflow-y: auto;
+ 	overflow-x: auto;
+}
+
+#searchButton {
+	width:40%;
+	left: 1%;
+  	position: absolute;
+}
+
+#AllSearches {
+	width:40%;
+	height:30%;
+	left: 1%;
+	top: 62%;
+  	position: absolute;
+  	overflow-y: auto;
+ 	overflow-x: auto;
+}
+
+#removeSearchButton {
+	width:5%;
+	left: 45%;
+  	position: absolute;
 }
