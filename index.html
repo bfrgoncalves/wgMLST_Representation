@@ -31,6 +31,9 @@
 				<li id="treeTab">
 					<a data-toggle="tab" data-target="#searchPlace" data-toggle="mainTab">Search</a>
 				</li>
+				<li id="treeTab">
+					<a data-toggle="tab" data-target="#filterPlace" data-toggle="mainTab">Filter</a>
+				</li>
 			</ul>
 			
 			<div class="tab-content">
@@ -53,6 +56,22 @@
 					</div>
 					<div id='AllSearches'></div>
 				</div>
+				<div class="tab-pane" id="filterPlace">
+				<form id='filterForm'>
+					<div id ='filterText' class="input-group">
+					  <input id ='filterTextpart' type="text" class="form-control" placeholder="1,2,3 or 1:4" aria-describedby="basic-addon2">
+					  <span class="input-group-addon" id="basic-addon2">Select genome numbers or an interval</span>
+					</div>
+					<div id='filterButton'>
+						<button class="btn btn-default" type ='submit'>Filter</button>
+					</div>
+				</form>
+				<div id='removefiltersButton'>
+						<button class="btn btn-default" onclick="removeFilters()">Remove All</button>
+					</div>
+				<div id='AllFilters'>Filters: <br></div>
+				</div>
+
 
 			</div>
 		</div>
@@ -63,4 +82,5 @@
 	<script type="text/javascript" src="dependencies/d3.min.js"></script>
 	<script type="text/javascript" src="javascripts/createGraphs.js"></script>
 	<script type="text/javascript" src="javascripts/searchLocus.js"></script>
+	<script type="text/javascript" src="javascripts/filterJson.js"></script>
 </html>

@@ -2,8 +2,9 @@ var yScale, svgDefaultWidth = $('#graphicArea').width(), svgHeight = $('#graphic
 
 var svgWidth = svgDefaultWidth;
 
-var data;
+var globalData = {};
 
+var currentData;
 
 var zoom = d3.behavior.zoom()
     .on("zoom", zoomed);
@@ -11,10 +12,13 @@ var zoom = d3.behavior.zoom()
 function main(){
 	d3.json("https://googledrive.com/host/0Bw6VuoagsdhmSS1PWUg3OWhfeEE", function(error, json) {
   		if (error) return console.warn(error);
-  		data = json;
-  		console.log(data);
-  		setScale(setLines);
-  		search_Locus(data);
+  		globalData.Genomes = json.Genomes;
+  		currentData = json;
+  		console.log(currentData);
+  		setScale(currentData, function(d){
+  			setLines(d);
+  		});
+  		search_Locus(currentData);
 	});
 
 	$('#searchForm').submit(function(e) {
@@ -22,20 +26,26 @@ function main(){
                           var LocusId = $('#Locusid').val();
                           highlightLocus(LocusId);
                       });
+
+	$('#filterForm').submit(function(e) {
+                          e.preventDefault();
+                          var query = $('#filterTextpart').val();
+                          filterJson(currentData, query);
+                      });
 }
 
-function setScale(callback){
+function setScale(data, callback){
 	maxSize = 0;
 	for (i in data.Genomes){
 		if (data.Genomes[i].Size > maxSize) maxSize = data.Genomes[i].Size;
 	}
 	sizeScale = d3.scale.linear().domain([0, maxSize]).range([start, svgWidth]);
-	callback();
+	callback(data);
 }
 //d3.scale.linear().domain([0, data.length]).range([h, 0]);
 
 
-function setLines(){
+function setLines(data){
 	svg = d3.select('#graphicArea').append('svg').attr('width', svgWidth).attr('height', svgHeight).call(zoom).append('g');
 	countGenomesY1 = -1;
 	countGenomesY2 = -1;
@@ -49,6 +59,8 @@ function setLines(){
 		countContigs1 = 0;
 		countContigs2 = 0;
 		countContigs3 = 0;
+		countContigs4 = 0;
+		countContigs5 = 0;
 		currentX = 0;
 		currentY = 0;
 		countGenomesY1 += 2;
@@ -101,6 +113,7 @@ function setLines(){
 							})
 							.attr("stroke-width", 2)
 					        .attr("stroke", "red");
+
 
 		
 		currentContigs = svg.select('#group_' + String(countLines));
@@ -182,6 +195,8 @@ function ChangeScale(value){
 	svgWidth = svgDefaultWidth * parseInt(value);
 	$('#currentScale').text(String(value) + 'x');
 	d3.selectAll('svg').remove();
-	setScale(setLines);
+	setScale(currentData, function(d){
+  			setLines(d);
+  	});
 }
 
