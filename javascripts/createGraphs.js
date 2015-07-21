@@ -18,19 +18,26 @@ function main(){
   		setScale(currentData, function(d){
   			setLines(d);
   		});
-  		search_Locus(currentData);
+  		search_Locus(currentData, 'Name');
+  		setTypeSearches();
 	});
 
 	$('#searchForm').submit(function(e) {
                           e.preventDefault();
                           var LocusId = $('#Locusid').val();
-                          highlightLocus(LocusId);
+                          var typeSearch = $( "#selectList option:selected" ).text();
+                          searchForLocus(LocusId, typeSearch);
                       });
 
 	$('#filterForm').submit(function(e) {
                           e.preventDefault();
                           var query = $('#filterTextpart').val();
                           filterJson(currentData, query);
+                      });
+
+	$('#selectList').change(function(e) {
+                          var selectValue = $( "#selectList option:selected" ).text();
+                          search_Locus(currentData, selectValue);
                       });
 }
 
@@ -177,8 +184,14 @@ function zoomed() {
 }
 
 function showInfo(locus){
-	toShow = '<br> Name: ' + locus.Name + '<br> Start at Contig: ' + locus.StartAt + '<br> End at Contig: ' + locus.EndtAt;
+	$('#clearButton').css('opacity',1.0);
+	toShow = '<br> Name: ' + locus.Name + '<br>Alias: ' + locus.Alias + '<br>Start at Contig: ' + locus.StartAt + '<br> End at Contig: ' + locus.EndtAt;
 	$('#infoPlace').append('<p>----------------------' + toShow + '</p>');
+}
+
+function clearInfo(){
+	$('#clearButton').css('opacity',0.0);
+	$('#infoPlace').empty();
 }
 
 function highlightSameName(locus){

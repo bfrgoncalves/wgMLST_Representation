@@ -39,9 +39,17 @@
 			<div class="tab-content">
 				<div class="tab-pane active" id="infoContent">
 					<div id ='infoPlace'></div>
+					<div id='clearButton' style='opacity:0.0'>
+						<button class="btn btn-default" onclick="clearInfo()">Clear</button>
+					</div>
 				</div>
 				<div class="tab-pane" id="searchPlace">
 					<div id ='search'>
+						<div class="form-group">
+						  <label for="selectList">Select list:</label>
+						  <select class="form-control" id="selectList">
+						  </select>
+						</div>
 						<form id='searchForm'>
 								<div class = "input-group" id="searchButton">
 									<input class="form-control" type='text' id='Locusid' style='color:black' placehorder="Search">

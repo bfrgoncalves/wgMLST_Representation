@@ -2,25 +2,31 @@ var optArray = [];
 var inSearch = [];
 countSearches = 0;
 
-var search_Locus= function(data){
-
+var search_Locus= function(data, attribute){
+	optArray = []
 	for (i in data.Genomes){
 		Contigs = data.Genomes[i].Contigs;
 		for (j in Contigs){
 			Locus = Contigs[j].Locus;
 			for (y in Locus){
-				if($.inArray(Locus[y].Name, optArray) === -1) optArray.push(Locus[y].Name);
+				if (Locus[y][attribute] == undefined) console.log(Locus[y]);
+				if($.inArray(Locus[y][attribute], optArray) === -1) optArray.push(Locus[y][attribute]);
 			}
 		}
 	}
 	optArray = optArray.sort();
+	//console.log(optArray);
+	$("#Locusid").autocomplete( "option", "source", optArray );
+
+
 }
 
 $(function () {
-    $("#Locusid").autocomplete({
-        source: optArray
-    });
-});
+	    $("#Locusid").autocomplete({
+	        source: optArray
+	    });
+	});
+
 
 function highlightLocus(locusId){
 
@@ -61,4 +67,27 @@ function addSearch(newSearch){
 	divSearches = $('#AllSearches');
 	toAppend = ('<div id="search_' + newSearch.replace(/\./g,'_') + '">' + newSearch + '<button class="btn btn-default" id="button_' + newSearch.replace(/\./g,'_') + '" onclick="removeSearch(this.id)">Remove</button></div>');
 	divSearches.append(toAppend);
+}
+
+function setTypeSearches(){
+	parent = $('#selectList');
+	console.log(parent);
+	options = '<option>Name</option>';
+	options += '<option>Alias</option>';
+	parent.append(options);
+}
+
+function searchForLocus(LocusId, typeSearch){
+	if (typeSearch == 'Name') highlightLocus(LocusId);
+	else highlightBySearchAll(LocusId, typeSearch);
+}
+
+function highlightBySearchAll(LocusId, typeSearch){
+
+	d3.selectAll('svg g g g rect').attr('opacity', function(d){
+													if (d[typeSearch] == LocusId) return 1.0;
+													else return 0.01;
+													});
+
+	addSearch(LocusId);
 }

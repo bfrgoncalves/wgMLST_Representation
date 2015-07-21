@@ -51,7 +51,8 @@
 
 #searchButton {
 	width:40%;
-	left: 1%;
+	left: 44%;
+	top: 57%;
   	position: absolute;
 }
 
@@ -67,7 +68,8 @@
 
 #removeSearchButton {
 	width:5%;
-	left: 45%;
+	left: 90%;
+	top: 57%;
   	position: absolute;
 }
 
@@ -102,4 +104,18 @@
   	position: absolute;
   	overflow-y: auto;
  	overflow-x: auto;
+}
+
+#clearButton {
+	width:5%;
+	left: 55%;
+	top:56%;
+  	position: absolute;
+}
+
+
+#selectList {
+	width:40%;
+	left: 1%;
+  	position: absolute;
 }
