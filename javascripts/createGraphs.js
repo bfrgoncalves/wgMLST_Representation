@@ -76,6 +76,7 @@ function setLines(data){
 	genomeInterval = 20;
 	countLines = 0;
 	lineID = '';
+	genomeToIndex = {}
 
 	for (i in data.Genomes){
 		countContigs1 = 0;
@@ -90,6 +91,7 @@ function setLines(data){
 		prevX1 = 0;
 		prevX2 = 0;
 		prevSize = 0;
+		genomeToIndex[data.Genomes[i].Name] = i;
 
 		genomeGroups = svg.append('g')
 						.attr('id', function(){
@@ -107,7 +109,10 @@ function setLines(data){
                  		.attr("y", function(d) { return (height + genomeInterval) * countGenomesY1; })
 						.attr("font-family", "sans-serif")
                  		.attr("font-size", "20px")
-                 		.attr("fill", "black");
+                 		.attr("fill", "black")
+                 		.on('click', function(d){
+                 			showGenomeInfo(genomeToIndex[d]);
+                 		});
 
 		currentLines = genomeGroups.selectAll('line')
 							.data(data.Genomes[i].Contigs)
@@ -212,8 +217,14 @@ function zoomed() {
 
 function showInfo(locus){
 	$('#clearButton').css('opacity',1.0);
-	contigLength = String(contig.Size);
-	toShow = '<br> Locus Name: ' + locus.Name + '<br> Alias: ' + locus.Alias + '<br> Start at Contig: ' + locus.StartAt + '<br> End at Contig: ' + locus.EndtAt;
+	toShow = '<br> Locus Name: ' + locus.Name + '<br> Alias: ' + locus.Alias + '<br> Start at Contig: ' + locus.StartAt + '<br> End at Contig: ' + locus.EndtAt + '<br> Description: ' + locus.Description;
+	$('#infoPlace').append('<p>----------------------' + toShow + '</p>');
+}
+
+function showGenomeInfo(genomeIndex){
+	genome = currentData.Genomes[genomeIndex];
+	$('#clearButton').css('opacity',1.0);
+	toShow = '<br> Name: ' + genome.Name + '<br> Number of Contigs: ' + String(genome.Contigs.length) + '<br> Size: ' + genome.Size;
 	$('#infoPlace').append('<p>----------------------' + toShow + '</p>');
 }
 
