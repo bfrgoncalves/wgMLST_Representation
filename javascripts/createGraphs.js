@@ -37,7 +37,9 @@ function main(){
 
 	$('#selectList').change(function(e) {
                           var selectValue = $( "#selectList option:selected" ).text();
+                          $('#Locusid').val('');
                           search_Locus(currentData, selectValue);
+
                       });
 }
 
