@@ -9,7 +9,7 @@ var search_Locus= function(data, attribute){
 		for (j in Contigs){
 			Locus = Contigs[j].Locus;
 			for (y in Locus){
-				if (Locus[y][attribute] == undefined) console.log(Locus[y]);
+				if (Locus[y][attribute] == undefined) console.log(Locus[y], attribute);
 				if($.inArray(Locus[y][attribute], optArray) === -1) optArray.push(Locus[y][attribute]);
 			}
 		}
@@ -19,6 +19,19 @@ var search_Locus= function(data, attribute){
 	$("#Locusid").autocomplete( "option", "source", optArray );
 
 
+}
+
+function filterByName(data){
+	var namesToFilter = [];
+	var filterParent = $("#filterByName");
+	filterParent.empty();
+	for (i in data.Genomes){
+		namesToFilter.push(data.Genomes[i].Name);
+	}
+	for (i in namesToFilter){
+		number = String(parseInt(i) + 1);
+		filterParent.append('<option value="'+number+'">' + number +' : ' + namesToFilter[i] + '</option>"');
+	}
 }
 
 $(function () {

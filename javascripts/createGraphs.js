@@ -5,6 +5,7 @@ var svgWidth = svgDefaultWidth;
 var globalData = {};
 
 var currentData;
+var currentSearchMethod = 'Name';
 
 var zoom = d3.behavior.zoom()
     .on("zoom", zoomed);
@@ -18,7 +19,8 @@ function main(){
   		setScale(currentData, function(d){
   			setLines(d);
   		});
-  		search_Locus(currentData, 'Name');
+  		search_Locus(currentData, currentSearchMethod);
+  		filterByName(currentData);
   		setTypeSearches();
 	});
 
@@ -32,15 +34,26 @@ function main(){
 	$('#filterForm').submit(function(e) {
                           e.preventDefault();
                           var query = $('#filterTextpart').val();
-                          filterJson(currentData, query);
+                          if (query != '') filterJson(currentData, query);
+                          else{
+                          	toQuery = '';
+                          	$( "#filterByName option:selected" ).each(function(i, selected){
+                          		toQuery += String($(selected)[0].value) + ',';
+                          	});
+                          	toQuery = toQuery.substring(0, toQuery.length - 1);
+                          	filterJson(currentData, toQuery);
+                          }
                       });
 
 	$('#selectList').change(function(e) {
                           var selectValue = $( "#selectList option:selected" ).text();
+                          currentSearchMethod = selectValue;
                           $('#Locusid').val('');
-                          search_Locus(currentData, selectValue);
+                          search_Locus(currentData, currentSearchMethod);
 
                       });
+
+	$('#filterByName').change(function(e) { $('#filterTextpart').val(''); });
 }
 
 function setScale(data, callback){
@@ -83,6 +96,18 @@ function setLines(data){
 									countLines += 1;
 									return 'group_' + String(countLines);
 						});
+
+		text = genomeGroups.selectAll("text")
+                        .data([data.Genomes[i].Name])
+                        .enter()
+                        .append('g')
+                        .append("text")
+                        .text( function (d) { return d; })
+                        .attr("x", function(d) { return -250; })
+                 		.attr("y", function(d) { return (height + genomeInterval) * countGenomesY1; })
+						.attr("font-family", "sans-serif")
+                 		.attr("font-size", "20px")
+                 		.attr("fill", "black");
 
 		currentLines = genomeGroups.selectAll('line')
 							.data(data.Genomes[i].Contigs)
@@ -168,7 +193,7 @@ function setLines(data){
             		defaultColor(d);
         		})
 				.on('click', function(d){
-					showInfo(d);
+					showInfo(d);	
 				});
 
 			prevLocation += contigSize;
@@ -187,7 +212,8 @@ function zoomed() {
 
 function showInfo(locus){
 	$('#clearButton').css('opacity',1.0);
-	toShow = '<br> Name: ' + locus.Name + '<br>Alias: ' + locus.Alias + '<br>Start at Contig: ' + locus.StartAt + '<br> End at Contig: ' + locus.EndtAt;
+	contigLength = String(contig.Size);
+	toShow = '<br> Locus Name: ' + locus.Name + '<br> Alias: ' + locus.Alias + '<br> Start at Contig: ' + locus.StartAt + '<br> End at Contig: ' + locus.EndtAt;
 	$('#infoPlace').append('<p>----------------------' + toShow + '</p>');
 }
 

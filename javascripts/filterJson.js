@@ -25,7 +25,8 @@ function filterByInterval(curData, genomeInterval){
 	setScale(currentData, function(d){
   			setLines(d);
   	});
-  	search_Locus(currentData);
+  	search_Locus(currentData, currentSearchMethod);
+  	filterByName(currentData);
 
 }
 
@@ -38,10 +39,12 @@ function filterByGenome(curData, specificGenomes){
 	}
 	currentData.Genomes = newGenomes.Genomes;
 	d3.selectAll('svg').remove();
+	console.log(currentData);
 	setScale(currentData, function(d){
   			setLines(d);
   	});
-  	search_Locus(currentData);
+  	search_Locus(currentData, currentSearchMethod);
+  	filterByName(currentData);
 
 }
 
@@ -51,7 +54,8 @@ function removeFilters(){
 	setScale(currentData, function(d){
   			setLines(d);
   	});
-  	search_Locus(currentData);
+  	search_Locus(currentData, currentSearchMethod);
+  	filterByName(currentData);
 }
 
 

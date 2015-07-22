@@ -74,33 +74,34 @@
 }
 
 #filterText {
-	width:40%;
+	width:30%;
 	height:3.8%;
 	left: 1%;
-	top: 56%;
+	top: 60%;
   	position: absolute;
   	overflow-y: auto;
  	overflow-x: auto;
 }
 
 #filterButton {
-	width:8%;
-	left: 42%;
-	top: 56%;
+	width:10%;
+	left: 36%;
+	top: 60%;
   	position: absolute;
 }
 
 #removefiltersButton {
 	width:5%;
-	left: 58%;
+	left: 90%;
+	top: 56%;
   	position: absolute;
 }
 
 #AllFilters {
 	width:40%;
 	height:30%;
-	left: 1%;
-	top: 62%;
+	left: 50%;
+	top: 60%;
   	position: absolute;
   	overflow-y: auto;
  	overflow-x: auto;
@@ -117,5 +118,13 @@
 #selectList {
 	width:40%;
 	left: 1%;
+  	position: absolute;
+}
+
+#filterByName {
+	width:40%;
+	height:30%;
+	left: 1%;
+	top:66%;
   	position: absolute;
 }
