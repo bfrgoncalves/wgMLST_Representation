@@ -76,7 +76,8 @@ function setLines(data){
 	genomeInterval = 20;
 	countLines = 0;
 	lineID = '';
-	genomeToIndex = {}
+	genomeToIndex = {};
+
 
 	for (i in data.Genomes){
 		countContigs1 = 0;
@@ -153,7 +154,6 @@ function setLines(data){
 							.attr("stroke-width", 2)
 					        .attr("stroke", "red");
 
-
 		
 		currentContigs = svg.select('#group_' + String(countLines));
 
@@ -169,17 +169,23 @@ function setLines(data){
 			currentX = sizeScale(prevLocation);
 			LocusPositionScale = d3.scale.linear().domain([0, contigSize]).range([currentX, sizeScale(prevLocation + contigSize)]);
 			LocusGroup = currentContigs.selectAll(toSearch).append('g').attr('class','LocusGroup');
+			countLocus = 0;
 
 			LocusGroup.selectAll(toSearch)
 				.data(data.Genomes[i].Contigs[j].Locus)
 				.enter()
 				.append('rect')
 				.attr('class', function(d){ return d.Name.replace(/\./g,'_').replace(/\:/g,'__');})
+				.attr('id', function(){
+					var id = String(i) + '--' + String(j) + '--' + String(countLocus);
+					countLocus += 1;
+					return id;
+				})
 				.attr('x', function(d){ 
 
 					if (parseInt(d.EndtAt) < parseInt(d.StartAt)){
 						if (isReverse == true) {
-							return LocusPositionScale(contigSize - parseInt(d.StartAt));
+							return LocusPositionScale(parseInt(d.EndtAt));
 						}
 						else return LocusPositionScale(parseInt(d.EndtAt));
 					}
@@ -198,7 +204,7 @@ function setLines(data){
             		defaultColor(d);
         		})
 				.on('click', function(d){
-					showInfo(d);	
+					showInfo(this.id);	
 				});
 
 			prevLocation += contigSize;
@@ -215,9 +221,17 @@ function zoomed() {
  svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 }
 
-function showInfo(locus){
+function showInfo(locusId){
+	console.log(locusId);
+	splitId = locusId.split('--');
+	GenomeId = parseInt(splitId[0]);
+	ContigId = parseInt(splitId[1]);
+	LocusId = parseInt(splitId[2]);
+	genome = currentData.Genomes[GenomeId];
+	contig = genome.Contigs[ContigId];
+	locus = contig.Locus[LocusId];
 	$('#clearButton').css('opacity',1.0);
-	toShow = '<br> Locus Name: ' + locus.Name + '<br> Alias: ' + locus.Alias + '<br> Start at Contig: ' + locus.StartAt + '<br> End at Contig: ' + locus.EndtAt + '<br> Description: ' + locus.Description;
+	toShow = '<br> Genome: ' + genome.Name + '<br> Contig: ' + contig.Name + '<br> Contig Size: ' + contig.Size + '<br> Locus Name: ' + locus.Name + '<br> Alias: ' + locus.Alias + '<br> Start at Contig: ' + locus.StartAt + '<br> End at Contig: ' + locus.EndtAt + '<br> Description: ' + locus.Description;
 	$('#infoPlace').append('<p>----------------------' + toShow + '</p>');
 }
 
