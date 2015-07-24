@@ -56,6 +56,8 @@ function removeFilters(){
   	});
   	search_Locus(currentData, currentSearchMethod);
   	filterByName(currentData);
+  	$('#AllFilters').empty();
+  	$('#AllFilters').text('Filters:');
 }
 
 

@@ -10,6 +10,10 @@ var currentSearchMethod = 'Name';
 var zoom = d3.behavior.zoom()
     .on("zoom", zoomed);
 
+var divSliderHeight = $('#SizeAttributes').height();
+
+$('#SizeAttributes').css('width', divSliderHeight);
+
 function main(){
 	d3.json("https://googledrive.com/host/0Bw6VuoagsdhmSS1PWUg3OWhfeEE", function(error, json) {
   		if (error) return console.warn(error);
