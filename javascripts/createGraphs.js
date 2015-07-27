@@ -186,18 +186,12 @@ function setLines(data){
 					return id;
 				})
 				.attr('x', function(d){ 
-
-					if (parseInt(d.EndtAt) < parseInt(d.StartAt)){
-						if (isReverse == true) {
-							return LocusPositionScale(parseInt(d.EndtAt));
-						}
-						else return LocusPositionScale(parseInt(d.EndtAt));
-					}
+					if (isReverse == true) return LocusPositionScale(parseInt(contigSize - d.EndtAt));
+					if (parseInt(d.EndtAt) < parseInt(d.StartAt)) return LocusPositionScale(parseInt(d.EndtAt));
 					else return LocusPositionScale(parseInt(d.StartAt)); })
 				.attr('y', currentY-Locusheight/2)
 				.attr('width', function(d){ 
 					if (parseInt(d.EndtAt) < parseInt(d.StartAt)) return sizeScale(parseInt(d.StartAt) - parseInt(d.EndtAt));
-					
 					else return sizeScale(parseInt(d.EndtAt)-parseInt(d.StartAt));
  				})
 				.attr('height', Locusheight)
@@ -214,9 +208,6 @@ function setLines(data){
 			prevLocation += contigSize;
 		}
 
-		
-
-
 	}
 
 }
@@ -226,7 +217,6 @@ function zoomed() {
 }
 
 function showInfo(locusId){
-	console.log(locusId);
 	splitId = locusId.split('--');
 	GenomeId = parseInt(splitId[0]);
 	ContigId = parseInt(splitId[1]);
@@ -235,16 +225,10 @@ function showInfo(locusId){
 	contig = genome.Contigs[ContigId];
 	locus = contig.Locus[LocusId];
 	$('#clearButton').css('opacity',1.0);
-	toShow = '<br> Genome: ' + genome.Name + '<br> Contig: ' + contig.Name + '<br> Contig Size: ' + contig.Size + '<br> Locus Name: ' + locus.Name + '<br> Alias: ' + locus.Alias + '<br> Start at Contig: ' + locus.StartAt + '<br> End at Contig: ' + locus.EndtAt + '<br> Description: ' + locus.Description;
+	toShow = '<br> Genome: ' + genome.Name + '<br> Contig: ' + contig.Name + '<br> Reverse: ' + contig.Reverse +  '<br> Contig Size: ' + contig.Size + '<br> Locus Name: ' + locus.Name + '<br> Alias: ' + locus.Alias + '<br> Start at Contig: ' + locus.StartAt + '<br> End at Contig: ' + locus.EndtAt + '<br> Description: ' + locus.Description;
 	$('#infoPlace').append('<p>----------------------' + toShow + '</p>');
 }
 
-function showGenomeInfo(genomeIndex){
-	genome = currentData.Genomes[genomeIndex];
-	$('#clearButton').css('opacity',1.0);
-	toShow = '<br> Name: ' + genome.Name + '<br> Number of Contigs: ' + String(genome.Contigs.length) + '<br> Size: ' + genome.Size;
-	$('#infoPlace').append('<p>----------------------' + toShow + '</p>');
-}
 
 function clearInfo(){
 	$('#clearButton').css('opacity',0.0);
