@@ -15,7 +15,7 @@ var divSliderHeight = $('#SizeAttributes').height();
 $('#SizeAttributes').css('width', divSliderHeight);
 
 function main(){
-	d3.json("https://googledrive.com/host/0Bw6VuoagsdhmSS1PWUg3OWhfeEE", function(error, json) {
+	d3.json("https://googledrive.com/host/0Bw6VuoagsdhmR3gxSGtsZHJqR3c", function(error, json) {
   		if (error) return console.warn(error);
   		globalData.Genomes = json.Genomes;
   		currentData = json;
