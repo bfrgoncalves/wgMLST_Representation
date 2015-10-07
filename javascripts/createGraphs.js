@@ -51,9 +51,10 @@ function main(){
 
 	$('#selectList').change(function(e) {
                           var selectValue = $( "#selectList option:selected" ).text();
+
                           currentSearchMethod = selectValue;
                           $('#Locusid').val('');
-                          search_Locus(currentData, currentSearchMethod);
+                          setTimeout(function(){ search_Locus(currentData, currentSearchMethod); }, 500);
 
                       });
 
